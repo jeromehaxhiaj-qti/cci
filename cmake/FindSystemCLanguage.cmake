@@ -59,12 +59,32 @@ if(NOT TARGET SystemC::systemc)
     if(NOT DEFINED SYSTEMC_HOME AND DEFINED ENV{SYSTEMC_HOME})
         set(SYSTEMC_HOME $ENV{SYSTEMC_HOME})
     endif()
-    find_path(SYSTEMC_INCLUDE_DIRS NAMES systemc
-            HINTS ${SYSTEMC_HOME}/include)
 
-    find_library(SYSTEMC_LIBRARIES NAMES libsystemc.a systemc
+    # Handle Windows path conversion for /opt/systemc
+    if(WIN32 AND NOT SYSTEMC_HOME)
+        # Convert Unix-style path to Windows path for MSYS2/MinGW environments
+        if(EXISTS "D:/msys64/opt/systemc")
+            set(SYSTEMC_HOME "D:/msys64/opt/systemc")
+        elseif(EXISTS "C:/msys64/opt/systemc")
+            set(SYSTEMC_HOME "C:/msys64/opt/systemc")
+        endif()
+    endif()
+
+    find_path(SYSTEMC_INCLUDE_DIRS NAMES systemc
+            HINTS ${SYSTEMC_HOME}/include
+            PATHS /opt/systemc/include
+                  D:/msys64/opt/systemc/include
+                  C:/msys64/opt/systemc/include)
+
+    find_library(SYSTEMC_LIBRARIES NAMES libsystemc.a systemc libsystemc.dll.a
             HINTS "${SYSTEMC_HOME}/lib-${SystemC_TARGET_ARCH}"
-            "${SYSTEMC_HOME}/lib")
+                  "${SYSTEMC_HOME}/lib"
+            PATHS "/opt/systemc/lib-${SystemC_TARGET_ARCH}"
+                  "/opt/systemc/lib"
+                  "D:/msys64/opt/systemc/lib-${SystemC_TARGET_ARCH}"
+                  "D:/msys64/opt/systemc/lib"
+                  "C:/msys64/opt/systemc/lib-${SystemC_TARGET_ARCH}"
+                  "C:/msys64/opt/systemc/lib")
 
     if(EXISTS ${SYSTEMC_INCLUDE_DIRS}/tlm/)
         list(APPEND SYSTEMC_INCLUDE_DIRS ${SYSTEMC_INCLUDE_DIRS}/tlm)

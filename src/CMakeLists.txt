@@ -57,6 +57,7 @@ add_library (cci
                         cci/core/cci_callback_impl.h
                         cci/core/cci_name_gen.cpp
                         cci/core/cci_version.h
+                        cci/core/cci_dll.h
                         cci/core/rapidjson.h
                         cci/core/cci_core_types.h
                         cci/core/systemc.h
@@ -107,12 +108,13 @@ target_compile_definitions (
   cci
   PUBLIC
   $<$<BOOL:${WIN32}>:WIN32>
-  $<$<AND:$<BOOL:${BUILD_SHARED_LIBS}>,$<OR:$<BOOL:${WIN32}>,$<BOOL:${CYGWIN}>>>:
-    SC_WIN_DLL>
+  $<$<AND:$<BOOL:${BUILD_SHARED_LIBS}>,$<BOOL:${WIN32}>>:SC_WIN_DLL>
+  $<$<AND:$<BOOL:${BUILD_SHARED_LIBS}>,$<BOOL:${WIN32}>>:CCI_DLL>
   PRIVATE
   SC_BUILD
   SC_INCLUDE_FX
-  $<$<AND:$<BOOL:${WIN32}>,$<BOOL:${MSVC}>>:_LIB>
+  $<$<AND:$<BOOL:${BUILD_SHARED_LIBS}>,$<BOOL:${WIN32}>>:CCI_DLL_EXPORTS>
+  $<$<AND:$<BOOL:${WIN32}>,$<BOOL:${MSVC}>,$<NOT:$<BOOL:${BUILD_SHARED_LIBS}>>>:_LIB>
   )
 
 target_compile_options(
@@ -127,7 +129,7 @@ target_compile_options(
 target_compile_features(
   cci
   PUBLIC
-  cxx_std_11)
+  cxx_std_17)
 
 target_include_directories(cci
   PUBLIC

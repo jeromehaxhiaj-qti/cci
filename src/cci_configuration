@@ -22,6 +22,7 @@
 
 // CCI core includes
 
+#include "cci/core/cci_dll.h"
 #include "cci/core/cci_version.h"
 #include "cci/core/cci_name_gen.h"
 #include "cci/core/cci_core_types.h"
